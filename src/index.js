@@ -228,7 +228,7 @@ const penner = (() => {
       const a = minMax(amplitude, 1, 10);
       const p = minMax(period, .1, 2);
       return t => {
-        return (t === 0 || t === 1) ? t : 
+        return (t === 0 || t === 1) ? t :
           -a * Math.pow(2, 10 * (t - 1)) * Math.sin((((t - 1) - (p / (Math.PI * 2) * Math.asin(1 / a))) * (Math.PI * 2)) / p);
       }
     }
@@ -244,7 +244,7 @@ const penner = (() => {
     const easeIn = functionEasings[name];
     eases['easeIn' + name] = easeIn;
     eases['easeOut' + name] = (a, b) => t => 1 - easeIn(a, b)(1 - t);
-    eases['easeInOut' + name] = (a, b) => t => t < 0.5 ? easeIn(a, b)(t * 2) / 2 : 
+    eases['easeInOut' + name] = (a, b) => t => t < 0.5 ? easeIn(a, b)(t * 2) / 2 :
       1 - easeIn(a, b)(t * -2 + 2) / 2;
   });
 
@@ -501,7 +501,7 @@ function getRectLength(el) {
 
 function getLineLength(el) {
   return getDistance(
-    {x: getAttribute(el, 'x1'), y: getAttribute(el, 'y1')}, 
+    {x: getAttribute(el, 'x1'), y: getAttribute(el, 'y1')},
     {x: getAttribute(el, 'x2'), y: getAttribute(el, 'y2')}
   );
 }
@@ -838,7 +838,7 @@ let pausedInstances = [];
 let raf;
 
 const engine = (() => {
-  function play() { 
+  function play() {
     raf = requestAnimationFrame(step);
   }
   function step(t) {
@@ -907,6 +907,7 @@ function anime(params = {}) {
   }
 
   function adjustTime(time) {
+    console.log(`adjustTime returned time is: ${instance.reversed ? instance.duration - time : time}`);
     return instance.reversed ? instance.duration - time : time;
   }
 
@@ -998,12 +999,15 @@ function anime(params = {}) {
   }
 
   function setInstanceProgress(engineTime) {
+    console.log(`setInstanceProgress engineTime is ${engineTime}`);
     const insDuration = instance.duration;
     const insDelay = instance.delay;
     const insEndDelay = insDuration - instance.endDelay;
     const insTime = adjustTime(engineTime);
     instance.progress = minMax((insTime / insDuration) * 100, 0, 100);
+    console.log(`instance progress is ${instance.progress}`);
     instance.reversePlayback = insTime < instance.currentTime;
+    console.log(`instance reversePlayback is ${instance.reversePlayback}`);
     if (children) { syncInstanceChildren(insTime); }
     if (!instance.began && instance.currentTime > 0) {
       instance.began = true;
@@ -1096,6 +1100,7 @@ function anime(params = {}) {
   }
 
   instance.seek = function(time) {
+    console.log(`instance seek time: ${time}`);
     setInstanceProgress(adjustTime(time));
   }
 
