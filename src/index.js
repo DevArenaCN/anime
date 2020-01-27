@@ -439,7 +439,11 @@ function getElementTransforms(el) {
   const str = el.style.transform || '';
   const reg  = /(\w+)\(([^)]*)\)/g;
   const transforms = new Map();
-  let m; while (m = reg.exec(str)) transforms.set(m[1], m[2]);
+  console.log(el);
+  let m; while (m = reg.exec(str))  {
+    transforms.set(m[1], m[2]);
+    console.log(transforms);
+  }
   return transforms;
 }
 
@@ -998,58 +1002,44 @@ function anime(params = {}) {
   }
 
   function setInstanceProgress(engineTime) {
-    console.log(`setInstanceProgress engineTime is ${engineTime}`);
     const insDuration = instance.duration;
     const insDelay = instance.delay;
     const insEndDelay = insDuration - instance.endDelay;
     const insTime = adjustTime(engineTime);
     instance.progress = minMax((insTime / insDuration) * 100, 0, 100);
-    console.log(`instance progress is ${instance.progress}`);
     instance.reversePlayback = insTime < instance.currentTime;
-    console.log('children below:');
-    console.log(children);
     if (children) { syncInstanceChildren(insTime); }
     if (!instance.began && instance.currentTime > 0) {
-      console.log(`!instance.began && instand.currentTime called: ${instance.currentTime}`);
       instance.began = true;
       setCallback('begin');
     }
     if (!instance.loopBegan && instance.currentTime > 0) {
-      console.log(`!instance.loopBegan && instand.currentTime called: ${instance.currentTime}`);
       instance.loopBegan = true;
       setCallback('loopBegin');
     }
     if (insTime <= insDelay && instance.currentTime !== 0) {
-      console.log(`insTime <= insDelay && instance.currentTime !== 0 called: ${instance.currentTime}`);
       setAnimationsProgress(0);
     }
     if ((insTime >= insEndDelay && instance.currentTime !== insDuration) || !insDuration) {
-      console.log(`insTime >= insEndDelay && instance.currentTime !== insDuration) || !insDuration called: ${insDuration}`);
       setAnimationsProgress(insDuration);
     }
     if (insTime > insDelay && insTime < insEndDelay) {
       if (!instance.changeBegan) {
-        console.log('!instance.changeBegan called');
         instance.changeBegan = true;
         instance.changeCompleted = false;
         setCallback('changeBegin');
       }
-      console.log('setCallback(change) called');
       setCallback('change');
       setAnimationsProgress(insTime);
     } else {
       if (instance.changeBegan) {
-        console.log('setCallback(changeComplete) called');
         instance.changeCompleted = true;
         instance.changeBegan = false;
         setCallback('changeComplete');
       }
     }
     instance.currentTime = minMax(insTime, 0, insDuration);
-    console.log(`instance.currentTime is: ${instance.currentTime}`);
-    console.log(`should setCallback(update) call ? ${instance.began}`);
     if (instance.began) setCallback('update');
-    console.log(`engineTime >= insDuration : ${engineTime >= insDuration}`);
     if (engineTime >= insDuration) {
       lastTime = 0;
       countIteration();
