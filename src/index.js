@@ -439,10 +439,10 @@ function getElementTransforms(el) {
   const str = el.style.transform || '';
   const reg  = /(\w+)\(([^)]*)\)/g;
   const transforms = new Map();
-  console.log(el);
+  // not sure why but this is the only way to get it working smh
+  const vm = reg.exec(str);
   let m; while (m = reg.exec(str))  {
     transforms.set(m[1], m[2]);
-    console.log(transforms);
   }
   return transforms;
 }
